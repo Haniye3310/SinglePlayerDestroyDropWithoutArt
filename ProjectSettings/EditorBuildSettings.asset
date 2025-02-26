@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/LogicSceneScene.unity
-    guid: 7930207bd2472c740a3c439b34d4ad78
+    path: Assets/Scenes/FinalSceneWithBothArtAndLogic.unity
+    guid: ba8bf5406d3175545986b2e5f909ef2b
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

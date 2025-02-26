@@ -68,7 +68,7 @@ public class MonoMesssgeReciever : MonoBehaviour
     }
     public void OnRestartClicked()
     {
-        SceneManager.LoadScene("Scene");
+        SceneManager.LoadScene("FinalSceneWithBothArtAndLogic");
     }
     public void OnJumpClicked() 
     {
