@@ -46,9 +46,6 @@ public class Gift : MonoBehaviour
             SystemFunction.RemoveGiftFromLists(dataRepo, this);
             // Destroy or disable the gift
  
-
-            Destroy(gameObject);
-
         }
         
 

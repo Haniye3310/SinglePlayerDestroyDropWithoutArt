@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static Unity.Collections.Unicode;
@@ -685,7 +686,19 @@ public class SystemFunction
                     for (int i = 0; i < giftPriorityList.Count; ++i)
                     {
                         Gift g = giftPriorityList[i];
-                        if ( null != g )
+                        List<Gift> allItemsRightNow = new List<Gift>();
+                        allItemsRightNow.AddRange(dataRepo.HammerList);
+                        foreach (GiftTime giftTime in dataRepo.CoinList)
+                        {
+                            allItemsRightNow.Add(giftTime.Gift);
+
+                        }
+                        foreach (GiftTime giftTime in dataRepo.BagOfCoinList)
+                        {
+                            allItemsRightNow.Add(giftTime.Gift);
+
+                        }
+                        if (allItemsRightNow.Contains(g))
                         {
                             playerData.TargetItem = g.transform;
                             break;
