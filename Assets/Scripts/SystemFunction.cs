@@ -473,6 +473,7 @@ public class SystemFunction
     }
     public static IEnumerator FreezePlayer(PlayerData playerData)
     {
+ 
         if (playerData.Player.IsMainPlayer)
         {
             Debug.Log($"IsFreezFirst:{playerData.IsFrozen}");

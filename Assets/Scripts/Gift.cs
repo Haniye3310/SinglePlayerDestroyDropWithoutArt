@@ -34,7 +34,7 @@ public class Gift : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             RigidBody.useGravity = true;
-            RigidBody.linearVelocity = new Vector3(this._moveDirection.x * 1f, 4, this._moveDirection.z * 1f);
+            RigidBody.linearVelocity = new Vector3(this._moveDirection.x * 1f, 2, this._moveDirection.z * 1f);
         }
     }
     private void Update()
@@ -45,14 +45,8 @@ public class Gift : MonoBehaviour
         {
             SystemFunction.RemoveGiftFromLists(dataRepo, this);
             // Destroy or disable the gift
-            float x = Vector2.Distance(
-                          new Vector2(dataRepo.GroundCenter.x, dataRepo.GroundCenter.z)
-                        , new Vector2(transform.position.x, transform.position.z)
-                                      );
-            Debug.Log(
-                $"DestroyBug: DistanceBItemAndCenter>=:{x}"
-                    );
-            Debug.Log($"DestroyBug: Radius-1:{dataRepo.GroundRadius - 1}");
+ 
+
             Destroy(gameObject);
 
         }
