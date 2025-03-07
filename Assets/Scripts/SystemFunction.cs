@@ -22,6 +22,15 @@ public class SystemFunction
             dataRepo.RemainingTimeText.text = ((int)dataRepo.RemainingTimeInGame).ToString();
             yield return null;
         }
+        //stops the gameplay
+        {
+            dataRepo.ShouldStopGame = true;
+            foreach (PlayerData p in dataRepo.Players)
+            {
+                Move(dataRepo, p, Vector3.zero);
+            }
+        }
+        
         dataRepo.ResultPanel.gameObject.SetActive(true);
         dataRepo.UIPanel.gameObject.SetActive(false);
 
@@ -514,7 +523,7 @@ public class SystemFunction
         Vector3 centerPosition = dataRepo.GeneratorData.Generator.transform.position; // Store the initial position as the center
         while (true)
         {
-            
+            if (dataRepo.ShouldStopGame) yield break;
             if (dataRepo.RemainingTimeInGame < 20 && dataRepo.RemainingTimeInGame > 10)
             {
                 dataRepo.GeneratorData.rotationSpeed = 7;
@@ -612,6 +621,7 @@ public class SystemFunction
     {
         while (true)
         {
+            if (dataRepo.ShouldStopGame) yield break;
             if (playerData.ItemsTimeQueue.Count > 0)
             {
                 if (Time.time - playerData.ItemsTimeQueue.Peek() > playerData.SecondToMakeDecision)

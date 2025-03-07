@@ -17,6 +17,7 @@ public class DataRepo : MonoBehaviour
 
     [NonSerialized] public int TimeOftheGame = 30;
     [NonSerialized] public float RemainingTimeInGame;
+    [NonSerialized] public bool ShouldStopGame = false;
 
     public TextMeshProUGUI RemainingTimeText;
     public TextMeshProUGUI StartCountDownTimer;
