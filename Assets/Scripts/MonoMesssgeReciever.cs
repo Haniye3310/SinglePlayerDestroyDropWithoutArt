@@ -11,7 +11,7 @@ public class MonoMesssgeReciever : MonoBehaviour
         
         foreach (PlayerData p in DataRepo.Players)
         {
-            p.PlayerAnimator.SetBool("Grounded", !p.IsJumping);
+            p.PlayerAnimator.SetBool("Grounded", p.IsGrounded);
         }
         DataRepo.UIPanel.gameObject.SetActive(false);
         while (Mathf.Abs(Camera.main.fieldOfView - 60) > 0.1)

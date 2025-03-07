@@ -65,8 +65,7 @@ public class PlayerData
     [NonSerialized] public Vector3 CurrentDirectionOfPlayer = Vector3.zero;
     [NonSerialized] public float CurrentVerticalOfPlayer = 0;
     [NonSerialized] public float CurrentHorizontalOfPlayer = 0;
-    [NonSerialized] public bool IsGrounded;
-    [NonSerialized] public bool IsJumping;
+    [NonSerialized] public bool IsGrounded =true;
     [NonSerialized] public bool OnJumpClicked;
     [NonSerialized] public Vector3 JumpVelocity;
     [NonSerialized]public float GroundLevel = 1f; // Y position of the ground level

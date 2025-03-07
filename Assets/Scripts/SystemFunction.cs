@@ -141,7 +141,6 @@ public class SystemFunction
                 if (p.Player == player)
                 {
                     p.IsGrounded = true;
-                    p.IsJumping = false;  // Reset jumping when grounded
                 }
             }
         }
@@ -227,7 +226,6 @@ public class SystemFunction
     {
         if (!playerData.IsGrounded) return;
         playerData.OnJumpClicked = true;
-        playerData.IsJumping = true;
     }
 
     public static void Update(DataRepo dataRepo)
@@ -747,7 +745,7 @@ public class SystemFunction
                     new Vector3(playerData.TargetItem.position.x, dataRepo.GroundCollider.transform.position.y, playerData.TargetItem.position.z);
                 Debug.DrawLine(playerData.TargetItem.position, playerData.Player.transform.position, Color.red);
                 Move(dataRepo, playerData, (targetCoinPosOnGround - playerData.Player.transform.position).normalized);
-                if (!playerData.IsJumping
+                if (playerData.IsGrounded
                     && 0.2f + playerData.LastJump < Time.time
                     && Vector3.Distance(targetCoinPosOnGround, playerData.Player.transform.position) < 1.3f)
                 {
