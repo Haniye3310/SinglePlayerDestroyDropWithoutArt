@@ -35,8 +35,8 @@ public class MonoMesssgeReciever : MonoBehaviour
         DataRepo.GroundRadius = DataRepo.GroundCollider.localScale.x / 2;
         DataRepo.GeneratorData.maxRadius = (DataRepo.GroundCollider.localScale.x / 4f);
         DataRepo.GeneratorData.minRadius = (DataRepo.GroundCollider.localScale.x / 5);
-        Debug.Log($"RadiusBug: min{DataRepo.GeneratorData.minRadius}");
-        Debug.Log($"RadiusBug: max{DataRepo.GeneratorData.maxRadius}");
+        //Debug.Log($"RadiusBug: min{DataRepo.GeneratorData.minRadius}");
+        //Debug.Log($"RadiusBug: max{DataRepo.GeneratorData.maxRadius}");
 
         DataRepo.GeneratorData.ItemTypeNumberPairs.Add(key: ItemType.Coin,value:8 );
         DataRepo.GeneratorData.ItemTypeNumberPairs.Add(key: ItemType.Hammer,value:5 );

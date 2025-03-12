@@ -1,4 +1,6 @@
+using NUnit.Framework;
 using NUnit.Framework.Internal;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,20 +17,32 @@ public class Player : MonoBehaviour
     {
         dataRepo = FindAnyObjectByType<DataRepo>();
     }
-    private void OnCollisionEnter(Collision collision)
+    private void Update()
     {
-        SystemFunction.OnPlayerCollisionEnter(this,this,collision,dataRepo);
+        DetectCoins();
     }
-    private void OnTriggerEnter(Collider other)
+    void DetectCoins()
     {
-        SystemFunction.OnPlayerTriggerEnter(this,this,dataRepo,other);
-    }
-    private void OnCollisionExit(Collision collision)
-    {
-        SystemFunction.OnPlayerCollisionExit(this,collision,dataRepo);
-    }
-    private void OnCollisionStay(Collision collision)
-    {
-        SystemFunction.OnPlayerCollisionStay(this,collision,dataRepo);
+        List<Gift> gifts = new List<Gift>();
+        gifts.AddRange(dataRepo.HammerList);
+        foreach (GiftTime giftTime in dataRepo.CoinList)
+        {
+            gifts.Add(giftTime.Gift);
+
+        }
+        foreach (GiftTime giftTime in dataRepo.BagOfCoinList)
+        {
+            gifts.Add(giftTime.Gift);
+
+        }
+        foreach (Gift gift in gifts)
+        {
+            float distance = Vector3.Distance(transform.position, gift.transform.position);
+
+            if (distance < 0.5f) // If the player is close enough
+            {
+                SystemFunction.CollectCoin(dataRepo,gift,this,this);
+            }
+        }
     }
 }

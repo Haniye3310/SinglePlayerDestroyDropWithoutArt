@@ -55,20 +55,14 @@ public class PlayerData
     public Player Player;
     public BotLevel BotLevel;
     public Animator PlayerAnimator;
-    public Rigidbody PlayerRigidbody;
     [NonSerialized]public float LastJump;
-
+    [NonSerialized] public Vector3 Velocity;
     
     [NonSerialized] public int NumberOfCoin;
     public TextMeshProUGUI NumberOfCoinText;
     [NonSerialized]public bool IsFrozen = false; // To track if the player is frozen
-    [NonSerialized] public Vector3 CurrentDirectionOfPlayer = Vector3.zero;
-    [NonSerialized] public float CurrentVerticalOfPlayer = 0;
-    [NonSerialized] public float CurrentHorizontalOfPlayer = 0;
-    [NonSerialized] public bool IsGrounded =true;
+    [NonSerialized] public bool IsGrounded;
     [NonSerialized] public bool OnJumpClicked;
-    [NonSerialized] public Vector3 JumpVelocity;
-    [NonSerialized]public float GroundLevel = 1f; // Y position of the ground level
     [NonSerialized]public float Gravity = 9.81f; // Acceleration due to gravity
     [NonSerialized] public Transform TargetAvoid;
     [NonSerialized] public Transform TargetItem;
@@ -108,10 +102,6 @@ public class GeneratorData
 public class ConfigData
 {
     public float SpeedOfCharacterMovement;
-    public float JumpSpeed;
-    [NonSerialized]public float JumpVelocity = 5;
-    [NonSerialized]public float FallMultiplier = 2.5f;
-    [NonSerialized]public float lowJumpMultiplier = 2f;
 }
 public enum ItemType
 {

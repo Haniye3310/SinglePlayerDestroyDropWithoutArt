@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Unity.Android.Gradle.Manifest;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 using static Unity.Collections.Unicode;
 
 public class SystemFunction
@@ -69,7 +71,7 @@ public class SystemFunction
         }
 
     }
-    public static void OnPlayerCollisionEnter(MonoBehaviour mono,Player player,Collision collision, DataRepo dataRepo)
+    public static void CollectCoin(DataRepo dataRepo, Gift gift, Player player, MonoBehaviour mono)
     {
         PlayerData playerData = null;
         foreach (PlayerData p in dataRepo.Players)
@@ -80,119 +82,57 @@ public class SystemFunction
             }
         }
 
-        if (collision.gameObject.tag == "Ground")
+        if (gift.ItemType == ItemType.Coin)
         {
-            playerData.IsGrounded = true;
+            if (!gift.Consumed)
+                mono.StartCoroutine(SystemFunction.AddCoin(playerData, 1));
         }
-        if (collision.gameObject.CompareTag("Gift"))
+        if (gift.ItemType == ItemType.BagOfCoin)
         {
-            Gift gift = collision.gameObject.GetComponent<Gift>();
-
-            if (gift.ItemType == ItemType.Coin)
+            if (!gift.Consumed)
+                mono.StartCoroutine(SystemFunction.AddCoin(playerData, 5));
+        }
+        if (gift.ItemType != ItemType.Hammer)
+        {
+            SystemFunction.RemoveGiftFromLists(dataRepo, gift);
+            gift.Consumed = true;
+            // Destroy or disable the gift
+            GameObject.Destroy(gift.gameObject);
+        }
+        if (gift.ItemType == ItemType.Hammer)
+        {
+            if (!playerData.IsFrozen)
             {
-                if (!gift.Consumed)
-                    mono.StartCoroutine(SystemFunction.AddCoin(playerData, 1));
-            }
-            if (gift.ItemType == ItemType.BagOfCoin)
-            {
-                if (!gift.Consumed)
-                    mono.StartCoroutine(SystemFunction.AddCoin(playerData, 5));
-            }
-            if (gift.ItemType != ItemType.Hammer)
-            {
-                SystemFunction.RemoveGiftFromLists(dataRepo, gift);
-                gift.Consumed = true;
-                // Destroy or disable the gift
-                GameObject.Destroy(gift.gameObject);
+                mono.StartCoroutine(FreezePlayer(playerData));
             }
         }
 
-    }
-    public static void OnPlayerTriggerEnter(MonoBehaviour mono,Player player,DataRepo dataRepo, Collider other)
-    {
-        PlayerData playerData = null;
-        foreach (PlayerData p in dataRepo.Players)
-        {
-            if (p.Player == player)
-            {
-                playerData = p;
-            }
-        }
-        if (other.gameObject.CompareTag("Gift"))
-        {
-            Gift gift = other.gameObject.GetComponentInParent<Gift>();
-            if (gift.ItemType == ItemType.Hammer)
-            {
-                if (!playerData.IsFrozen)
-                {
-                    mono.StartCoroutine(FreezePlayer(playerData));
-                }
-            }
-            
-        }
-
-    }
-    public static void OnPlayerCollisionStay(Player player, Collision collision, DataRepo dataRepo)
-    {
-        if (collision.gameObject.tag == "Ground")
-        {
-            foreach (PlayerData p in dataRepo.Players)
-            {
-                if (p.Player == player)
-                {
-                    p.IsGrounded = true;
-                }
-            }
-        }
-    }
-
-    public static void OnPlayerCollisionExit(Player player, Collision collision, DataRepo dataRepo)
-    {
-
-        if (collision.gameObject.tag == "Ground")
-        {
-            foreach (PlayerData p in dataRepo.Players)
-            {
-                if (p.Player == player)
-                {
-                    p.IsGrounded = false;
-                }
-            }
-        }
     }
     public static void Move(DataRepo dataRepo, PlayerData playerData, Vector3 direction)
     {
         if (playerData.Player.IsMainPlayer)
         {
-            Debug.Log($"IsMove:{playerData.IsFrozen}");
+            //Debug.Log($"IsMove:{playerData.IsFrozen}");
         }
+        // Ground check: We assume the ground is at y = 0
         if (playerData.IsFrozen) return;
-        // Move the player
-        playerData.Player.transform.Translate(direction * dataRepo.ConfigData.SpeedOfCharacterMovement * Time.deltaTime, Space.World);
 
-        // Get the player's position on the XZ plane
-        Vector3 playerPosition = playerData.Player.transform.position;
-        Vector2 playerXZ = new Vector2(playerPosition.x, playerPosition.z);
+        // Movement vector
+        Vector3 move = new Vector3(direction.x, 0, direction.z).normalized;
 
-        // Get the cylinder center on the XZ plane
-        Vector2 cylinderCenterXZ = new Vector2(dataRepo.GroundCenter.x, dataRepo.GroundCenter.z);
-
-        // Calculate distance from the center of the cylinder
-        float distanceFromCenter = Vector2.Distance(playerXZ, cylinderCenterXZ);
-
-        // If the player is outside the cylinder radius, move them back to the boundary
-        if (distanceFromCenter > dataRepo.GroundRadius)
+        // Prevent players from moving into each other
+        if (
+            !CheckForCollision(dataRepo,move,playerData)&&
+            move.magnitude > 0)
         {
-            Vector2 directionBackToCenter = (playerXZ - cylinderCenterXZ).normalized * dataRepo.GroundRadius;
-            playerData.Player.transform.position = new Vector3(cylinderCenterXZ.x + directionBackToCenter.x, playerPosition.y, cylinderCenterXZ.y + directionBackToCenter.y);
+            playerData.Player.transform.position += move * dataRepo.ConfigData.SpeedOfCharacterMovement * Time.deltaTime;
+
+            // Rotate player to face movement direction
+            Quaternion targetRotation = Quaternion.LookRotation(move);
+            playerData.Player.transform.rotation = Quaternion.Slerp(playerData.Player.transform.rotation, targetRotation, Time.deltaTime * 10f);
         }
 
-        // Handle rotation if there's movement
-        if (direction != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-            playerData.Player.transform.rotation = Quaternion.Slerp(playerData.PlayerRigidbody.transform.rotation, targetRotation, Time.deltaTime * 100);
-        }
+    
 
         // Set animator parameters
         if (direction.magnitude < 0.1f)
@@ -204,7 +144,24 @@ public class SystemFunction
             playerData.PlayerAnimator.SetFloat("MoveSpeed", 1);
         }
     }
+    // Check if there is another player in the direction of movement
+    public static bool CheckForCollision(DataRepo dataRepo,Vector3 moveDirection,PlayerData playerData)
+    {
+        
+        foreach (PlayerData p in dataRepo.Players)
+        {
+            if (p.Player.gameObject == playerData.Player.gameObject) continue; // Skip self
 
+            float distance = Vector3.Distance(
+                playerData.Player.transform.position + moveDirection * dataRepo.ConfigData.SpeedOfCharacterMovement * Time.deltaTime,
+                                              p.Player.transform.position);
+            if (distance < 0.5f)
+            {
+                return true; // Too close, prevent movement
+            }
+        }
+        return false; // No collision
+    }
     public static void FixedUpdate(DataRepo dataRepo)
     {
         float v = dataRepo.Joystick.Vertical;
@@ -264,18 +221,27 @@ public class SystemFunction
 
         foreach(PlayerData p in dataRepo.Players)
         {
+
+            p.IsGrounded = p.Player.transform.position.y <= dataRepo.GroundCollider.position.y + (dataRepo.GroundCollider.localScale.y);
+            if (!p.IsGrounded)
+                p.Velocity.y -= p.Gravity * Time.deltaTime;
+            if (p.IsGrounded && p.Velocity.y < 0)
+            {
+                p.Velocity.y = 0f;
+            }
+
             if (p.OnJumpClicked)
             {
+
                 p.OnJumpClicked = false;
-                p.PlayerRigidbody.velocity = Vector3.up * dataRepo.ConfigData.JumpVelocity;
+                // Jumping (only when grounded)
+                if (p.IsGrounded) // Button "Jump" can be bound to a joystick button
+                {
+                    p.Velocity.y = 4;
+                }
+                // Apply the vertical velocity (falling or jumping)
             }
-
-
-            if (p.PlayerRigidbody.velocity.y < 0)
-            {
-                p.PlayerRigidbody.velocity += Vector3.up * Physics.gravity.y * (dataRepo.ConfigData.FallMultiplier - 1) * Time.deltaTime;
-
-            }
+            p.Player.transform.position += p.Velocity * Time.deltaTime;
         }
     }
     public static IEnumerator ChangeBotLevel(DataRepo dataRepo)
@@ -437,7 +403,7 @@ public class SystemFunction
     }
     public static void InstantiateItemAndAddThemToLists(DataRepo dataRepo,ItemType itemType)
     {
-        Debug.Log($"TypeBug:{itemType}");
+        //Debug.Log($"TypeBug:{itemType}");
         Gift go;
         if(itemType== ItemType.Coin)
         {
@@ -484,7 +450,7 @@ public class SystemFunction
  
         if (playerData.Player.IsMainPlayer)
         {
-            Debug.Log($"IsFreezFirst:{playerData.IsFrozen}");
+            //Debug.Log($"IsFreezFirst:{playerData.IsFrozen}");
         }
         playerData.IsFrozen = true;
         float EndTimer = Time.time + 3;
@@ -508,7 +474,7 @@ public class SystemFunction
         playerData.IsFrozen = false;
         if (playerData.Player.IsMainPlayer)
         {
-            Debug.Log($"IsFreezEnd:{playerData.IsFrozen}");
+            //Debug.Log($"IsFreezEnd:{playerData.IsFrozen}");
         }
     }
     public static IEnumerator RotateGenerator(DataRepo dataRepo)
@@ -738,7 +704,7 @@ public class SystemFunction
                     }
                 }
             }
-            Debug.Log($"BBug: TargetItem:{playerData.TargetItem}");
+            //Debug.Log($"BBug: TargetItem:{playerData.TargetItem}");
             if (playerData.TargetItem)
             {
                 Vector3 targetCoinPosOnGround =
@@ -746,7 +712,7 @@ public class SystemFunction
                 Debug.DrawLine(playerData.TargetItem.position, playerData.Player.transform.position, Color.red);
                 Move(dataRepo, playerData, (targetCoinPosOnGround - playerData.Player.transform.position).normalized);
                 if (playerData.IsGrounded
-                    && 0.2f + playerData.LastJump < Time.time
+                    && 0.3f + playerData.LastJump < Time.time
                     && Vector3.Distance(targetCoinPosOnGround, playerData.Player.transform.position) < 1.3f)
                 {
                     playerData.LastJump = Time.time;
@@ -770,12 +736,12 @@ public class SystemFunction
                 if (playerData.TargetMovement == Vector3.zero)
                 {
                     playerData.TargetMovement = GetRandomPositionOnGround(dataRepo,playerData);
-                    Debug.Log($"TargetMovement of player {playerData.Player}is initialized");
+                    //Debug.Log($"TargetMovement of player {playerData.Player}is initialized");
 
                 }
                 Debug.DrawLine(playerData.TargetMovement, playerData.Player.transform.position, Color.green);
                 Move(dataRepo, playerData, (playerData.TargetMovement - playerData.Player.transform.position).normalized);
-                Debug.Log($"TargetMovement of player {playerData.Player}:{playerData.TargetMovement}");
+                //Debug.Log($"TargetMovement of player {playerData.Player}:{playerData.TargetMovement}");
                 if (Vector3.Distance(playerData.TargetMovement, playerData.Player.transform.position) < 0.1f)
                 {
                     playerData.TargetMovement = Vector3.zero;
