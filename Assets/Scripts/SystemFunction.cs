@@ -162,6 +162,28 @@ public class SystemFunction
         }
         return false; // No collision
     }
+    public static void HandleCollisions(DataRepo dataRepo, PlayerData playerData)
+    {
+
+        foreach (PlayerData p in dataRepo.Players)
+        {
+            if (p.Player.gameObject == playerData.Player.gameObject) continue;
+
+            Vector3 direction = playerData.Player.transform.position - p.Player.transform.position;
+            direction.y = 0; // Ignore Y-axis
+
+            float distance = direction.magnitude;
+            float playerCollisionRadius = 0.5f; // Adjust as needed
+            float pushBackForce = 0.1f;
+
+            if (distance < playerCollisionRadius)
+            {
+                Vector3 pushDirection = direction.normalized;
+                playerData.Player.transform.position += pushDirection * pushBackForce; // Push player away in X/Z only
+            }
+        }
+    }
+
     public static void FixedUpdate(DataRepo dataRepo)
     {
         float v = dataRepo.Joystick.Vertical;
@@ -187,7 +209,8 @@ public class SystemFunction
 
     public static void Update(DataRepo dataRepo)
     {
-
+        foreach(PlayerData p in dataRepo.Players)
+            HandleCollisions(dataRepo,p);
         PlayerData mainPlayer = null;
         foreach (PlayerData p in dataRepo.Players)
         {
