@@ -116,14 +116,13 @@ public class SystemFunction
         }
         // Ground check: We assume the ground is at y = 0
         if (playerData.IsFrozen) return;
+        if (!playerData.IsGrounded) return;
 
         // Movement vector
         Vector3 move = new Vector3(direction.x, 0, direction.z).normalized;
 
         // Prevent players from moving into each other
-        if (
-            !CheckForCollision(dataRepo,move,playerData)&&
-            move.magnitude > 0)
+        if (move.magnitude > 0.1f)
         {
             playerData.Player.transform.position += move * dataRepo.ConfigData.SpeedOfCharacterMovement * Time.deltaTime;
 
@@ -145,44 +144,31 @@ public class SystemFunction
         }
     }
     // Check if there is another player in the direction of movement
-    public static bool CheckForCollision(DataRepo dataRepo,Vector3 moveDirection,PlayerData playerData)
-    {
-        
-        foreach (PlayerData p in dataRepo.Players)
-        {
-            if (p.Player.gameObject == playerData.Player.gameObject) continue; // Skip self
-
-            float distance = Vector3.Distance(
-                playerData.Player.transform.position + moveDirection * dataRepo.ConfigData.SpeedOfCharacterMovement * Time.deltaTime,
-                                              p.Player.transform.position);
-            if (distance < 0.5f)
-            {
-                return true; // Too close, prevent movement
-            }
-        }
-        return false; // No collision
-    }
+    
     public static void HandleCollisions(DataRepo dataRepo, PlayerData playerData)
     {
-
         foreach (PlayerData p in dataRepo.Players)
         {
             if (p.Player.gameObject == playerData.Player.gameObject) continue;
 
             Vector3 direction = playerData.Player.transform.position - p.Player.transform.position;
-            direction.y = 0; // Ignore Y-axis
-
+            direction.y = 0; // Ignore Y-axis for pushback
             float distance = direction.magnitude;
             float playerCollisionRadius = 0.5f; // Adjust as needed
-            float pushBackForce = 0.1f;
+            float pushBackForce = 0.1f; // Adjust for smooth pushing
 
-            if (distance < playerCollisionRadius)
+            if (distance < playerCollisionRadius && distance > 0) // Prevent division by zero
             {
                 Vector3 pushDirection = direction.normalized;
-                playerData.Player.transform.position += pushDirection * pushBackForce; // Push player away in X/Z only
+                float pushAmount = (playerCollisionRadius - distance) * pushBackForce;
+
+                // Push both players away from each other
+                playerData.Player.transform.position += pushDirection * pushAmount;
+                p.Player.transform.position -= pushDirection * pushAmount; // Opposite direction
             }
         }
     }
+
 
     public static void FixedUpdate(DataRepo dataRepo)
     {
@@ -735,8 +721,9 @@ public class SystemFunction
                 Debug.DrawLine(playerData.TargetItem.position, playerData.Player.transform.position, Color.red);
                 Move(dataRepo, playerData, (targetCoinPosOnGround - playerData.Player.transform.position).normalized);
                 if (playerData.IsGrounded
-                    && 0.3f + playerData.LastJump < Time.time
+                     && 0.3f + playerData.LastJump < Time.time
                     && Vector3.Distance(targetCoinPosOnGround, playerData.Player.transform.position) < 1.3f)
+                    
                 {
                     playerData.LastJump = Time.time;
                     OnJumpClicked(dataRepo, playerData);
