@@ -41,7 +41,7 @@ public class Gift : MonoBehaviour
     {
         // Check if the gift has moved outside the cylinder
         if (Vector2.Distance(new Vector2( dataRepo.GroundCenter.x,dataRepo.GroundCenter.z)
-            , new Vector2(transform.position.x, transform.position.z)) >= dataRepo.GroundRadius-0.2)
+            , new Vector2(transform.position.x, transform.position.z)) >= dataRepo.GroundRadius+0.2)
         {
             SystemFunction.RemoveGiftFromLists(dataRepo, this);
             // Destroy or disable the gift

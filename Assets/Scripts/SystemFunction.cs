@@ -122,7 +122,7 @@ public class SystemFunction
         Vector3 move = new Vector3(direction.x, 0, direction.z).normalized;
 
         // Prevent players from moving into each other
-        if (move.magnitude > 0.1f)
+        if (move.magnitude > 0f)
         {
             playerData.Player.transform.position += move * dataRepo.ConfigData.SpeedOfCharacterMovement * Time.deltaTime;
 
@@ -232,6 +232,11 @@ public class SystemFunction
         {
 
             p.IsGrounded = p.Player.transform.position.y <= dataRepo.GroundCollider.position.y + (dataRepo.GroundCollider.localScale.y);
+            if(Vector2.Distance(new Vector2(dataRepo.GroundCenter.x, dataRepo.GroundCenter.z)
+            , new Vector2(p.Player.transform.position.x, p.Player.transform.position.z)) >= dataRepo.GroundRadius+0.2f)
+            {
+                p.IsGrounded = false;
+            }
             if (!p.IsGrounded)
                 p.Velocity.y -= p.Gravity * Time.deltaTime;
             if (p.IsGrounded && p.Velocity.y < 0)
