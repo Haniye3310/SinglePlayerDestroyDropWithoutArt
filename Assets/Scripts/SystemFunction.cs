@@ -126,12 +126,17 @@ public class SystemFunction
         {
             playerData.Player.transform.position += move * dataRepo.ConfigData.SpeedOfCharacterMovement * Time.deltaTime;
 
+            
+        }
+        if (move.magnitude > 0.5f)
+        {
             // Rotate player to face movement direction
-            Quaternion targetRotation = Quaternion.LookRotation(move);
-            playerData.Player.transform.rotation = Quaternion.Slerp(playerData.Player.transform.rotation, targetRotation, Time.deltaTime * 10f);
+            Quaternion targetRotation =
+                Quaternion.LookRotation(move);
+            playerData.Player.transform.rotation =
+                Quaternion.Slerp(playerData.Player.transform.rotation, targetRotation, Time.deltaTime * 10f);
         }
 
-    
 
         // Set animator parameters
         if (direction.magnitude < 0.1f)
@@ -152,23 +157,19 @@ public class SystemFunction
             if (p.Player.gameObject == playerData.Player.gameObject) continue;
 
             Vector3 direction = playerData.Player.transform.position - p.Player.transform.position;
-            direction.y = 0; // Ignore Y-axis for pushback
+            direction.y = 0; // Ignore Y-axis
+
             float distance = direction.magnitude;
             float playerCollisionRadius = 0.5f; // Adjust as needed
-            float pushBackForce = 0.1f; // Adjust for smooth pushing
+            float pushBackForce = 0.1f;
 
-            if (distance < playerCollisionRadius && distance > 0) // Prevent division by zero
+            if (distance < playerCollisionRadius)
             {
                 Vector3 pushDirection = direction.normalized;
-                float pushAmount = (playerCollisionRadius - distance) * pushBackForce;
-
-                // Push both players away from each other
-                playerData.Player.transform.position += pushDirection * pushAmount;
-                p.Player.transform.position -= pushDirection * pushAmount; // Opposite direction
+                playerData.Player.transform.position += pushDirection * pushBackForce; // Push player away in X/Z only
             }
         }
     }
-
 
     public static void FixedUpdate(DataRepo dataRepo)
     {
@@ -618,7 +619,8 @@ public class SystemFunction
                         Vector2 cylinderCenterXZ = new Vector2(dataRepo.GroundCenter.x, dataRepo.GroundCenter.z);
 
                         // Calculate distance from the center of the cylinder
-                        float distanceFromCenter = Vector2.Distance(new Vector2( g.Gift.transform.position.x,g.Gift.transform.position.z), cylinderCenterXZ);
+                        float distanceFromCenter = 
+                            Vector2.Distance(new Vector2( g.Gift.transform.position.x,g.Gift.transform.position.z), cylinderCenterXZ);
 
                         if (distanceFromCenter < dataRepo.GroundRadius)
                         {
@@ -675,13 +677,12 @@ public class SystemFunction
                     {
                         Gift g = giftPriorityList[i];
                         List<Gift> allItemsRightNow = new List<Gift>();
-                        allItemsRightNow.AddRange(dataRepo.HammerList);
-                        foreach (GiftTime giftTime in dataRepo.CoinList)
+                        foreach (GiftTime giftTime in coinList)
                         {
                             allItemsRightNow.Add(giftTime.Gift);
 
                         }
-                        foreach (GiftTime giftTime in dataRepo.BagOfCoinList)
+                        foreach (GiftTime giftTime in bagList)
                         {
                             allItemsRightNow.Add(giftTime.Gift);
 
@@ -776,6 +777,17 @@ public class SystemFunction
 
     public static void RemoveGiftFromLists(DataRepo dataRepo, Gift giftShouldBeRemoved) 
     {
+        foreach(PlayerData p in dataRepo.Players)
+        {
+            if(p.TargetItem == giftShouldBeRemoved.transform)
+            {
+                p.TargetItem = null;
+            }
+            if(p.TargetAvoid == giftShouldBeRemoved.transform)
+            {
+                p.TargetAvoid = null;
+            }
+        }
         for(int i = 0; i < dataRepo.HammerList.Count;i++)
         {
             if (dataRepo.HammerList[i] == giftShouldBeRemoved)
@@ -803,24 +815,29 @@ public class SystemFunction
     }
     public static Vector3 GetRandomPositionOnGround(DataRepo dataRepo, PlayerData playerData)
     {
-        // Calculate the effective radius of the ground
-        float radius = dataRepo.GroundCollider.localScale.x * 0.3f;
+        Vector3 r = Vector3.zero;
+        do
+        {
+            // Calculate the effective radius of the ground
+            float radius = dataRepo.GroundCollider.localScale.x * 0.3f;
 
-        // Generate a random angle in radians
-        float angle = Random.Range(0f, Mathf.PI * 2);
+            // Generate a random angle in radians
+            float angle = Random.Range(0f, Mathf.PI * 2);
 
-        // Calculate x and z coordinates relative to the center of the ground
-        float x = Mathf.Cos(angle) * radius;
-        float z = Mathf.Sin(angle) * radius;
+            // Calculate x and z coordinates relative to the center of the ground
+            float x = Mathf.Cos(angle) * radius;
+            float z = Mathf.Sin(angle) * radius;
 
-        // Adjust the position to be relative to the ground's actual position
-        float adjustedY = dataRepo.GroundCollider.position.y + (dataRepo.GroundCollider.localScale.y); // Top surface of the ground
+            // Adjust the position to be relative to the ground's actual position
+            float adjustedY = dataRepo.GroundCollider.position.y + (dataRepo.GroundCollider.localScale.y); // Top surface of the ground
 
-        return new Vector3(
-            x + dataRepo.GroundCollider.position.x, // Adjust x based on the ground's center position
-            adjustedY, // Set Y to the ground's top surface
-            z + dataRepo.GroundCollider.position.z  // Adjust z based on the ground's center position
-        );
+            r = new Vector3(
+                x + dataRepo.GroundCollider.position.x, // Adjust x based on the ground's center position
+                adjustedY, // Set Y to the ground's top surface
+                z + dataRepo.GroundCollider.position.z  // Adjust z based on the ground's center position
+            );
+        } while (Vector3.Distance(playerData.Player.transform.position, r) < 0.7f);
+        return r;
     }
 
 }

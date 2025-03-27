@@ -44,6 +44,7 @@ public class Gift : MonoBehaviour
             , new Vector2(transform.position.x, transform.position.z)) >= dataRepo.GroundRadius+0.2)
         {
             SystemFunction.RemoveGiftFromLists(dataRepo, this);
+            
             // Destroy or disable the gift
  
         }
