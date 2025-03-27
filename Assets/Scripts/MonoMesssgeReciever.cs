@@ -8,7 +8,6 @@ public class MonoMesssgeReciever : MonoBehaviour
     bool start;
     private IEnumerator Start()
     {
-        
         foreach (PlayerData p in DataRepo.Players)
         {
             p.PlayerAnimator.SetBool("Grounded", p.IsGrounded);

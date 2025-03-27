@@ -267,13 +267,13 @@ public class SystemFunction
             if (p.OnJumpClicked)
             {
                 p.OnJumpClicked = false;
-                p.PlayerRigidbody.velocity = Vector3.up * dataRepo.ConfigData.JumpVelocity;
+                p.PlayerRigidbody.linearVelocity = Vector3.up * dataRepo.ConfigData.JumpVelocity;
             }
 
 
-            if (p.PlayerRigidbody.velocity.y < 0)
+            if (p.PlayerRigidbody.linearVelocity.y < 0)
             {
-                p.PlayerRigidbody.velocity += Vector3.up * Physics.gravity.y * (dataRepo.ConfigData.FallMultiplier - 1) * Time.deltaTime;
+                p.PlayerRigidbody.linearVelocity += Vector3.up * Physics.gravity.y * (dataRepo.ConfigData.FallMultiplier - 1) * Time.deltaTime;
 
             }
         }
