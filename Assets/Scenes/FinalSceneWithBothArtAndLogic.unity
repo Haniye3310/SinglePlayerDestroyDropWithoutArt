@@ -1132,6 +1132,7 @@ MonoBehaviour:
     BotLevel: 3
     PlayerAnimator: {fileID: 4535607193373463874}
     PlayerRigidbody: {fileID: 7498944603278970683}
+    Strength: 40
     NumberOfCoinText: {fileID: 2093073453}
     SecondToMakeDecision: 0
     ChanceOfAvoidance: 0
@@ -1140,6 +1141,7 @@ MonoBehaviour:
     BotLevel: 0
     PlayerAnimator: {fileID: 730203189681567291}
     PlayerRigidbody: {fileID: 6683939131538435140}
+    Strength: 30
     NumberOfCoinText: {fileID: 753928565}
     SecondToMakeDecision: 0.1
     ChanceOfAvoidance: 20
@@ -1148,6 +1150,7 @@ MonoBehaviour:
     BotLevel: 2
     PlayerAnimator: {fileID: 7695261887150504375}
     PlayerRigidbody: {fileID: 1078906115}
+    Strength: 20
     NumberOfCoinText: {fileID: 1589435624}
     SecondToMakeDecision: 0.3
     ChanceOfAvoidance: 40
@@ -1156,6 +1159,7 @@ MonoBehaviour:
     BotLevel: 1
     PlayerAnimator: {fileID: 4012830677016055699}
     PlayerRigidbody: {fileID: 7645859022395445078}
+    Strength: 10
     NumberOfCoinText: {fileID: 173885121}
     SecondToMakeDecision: 0.5
     ChanceOfAvoidance: 60
@@ -2883,9 +2887,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 112
-  m_CollisionDetection: 3
+  m_CollisionDetection: 1
 --- !u!1 &1131555665
 GameObject:
   m_ObjectHideFlags: 0
@@ -31351,7 +31355,7 @@ GameObject:
   - component: {fileID: 7695261887150504377}
   m_Layer: 6
   m_Name: C04
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -43880,7 +43884,7 @@ GameObject:
   - component: {fileID: 6683939131538435138}
   m_Layer: 6
   m_Name: C03
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -46050,9 +46054,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 112
-  m_CollisionDetection: 3
+  m_CollisionDetection: 1
 --- !u!136 &6683939131538435141
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -49393,7 +49397,7 @@ GameObject:
   - component: {fileID: 7498944603278970681}
   m_Layer: 6
   m_Name: C02
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -50854,9 +50858,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 112
-  m_CollisionDetection: 3
+  m_CollisionDetection: 1
 --- !u!136 &7498944603278970684
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -51516,7 +51520,7 @@ GameObject:
   - component: {fileID: 7645859022395445076}
   m_Layer: 6
   m_Name: C06
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -51579,9 +51583,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 112
-  m_CollisionDetection: 3
+  m_CollisionDetection: 1
 --- !u!136 &7645859022395445079
 CapsuleCollider:
   m_ObjectHideFlags: 0

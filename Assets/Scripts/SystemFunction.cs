@@ -25,10 +25,6 @@ public class SystemFunction
         //stops the gameplay
         {
             dataRepo.ShouldStopGame = true;
-            foreach (PlayerData p in dataRepo.Players)
-            {
-                Move(dataRepo, p, Vector3.zero);
-            }
         }
         
         dataRepo.ResultPanel.gameObject.SetActive(true);
@@ -108,6 +104,55 @@ public class SystemFunction
         }
 
     }
+    public static void OnPlayerCollisionStay(Player player, Collision collision, DataRepo dataRepo)
+    {
+        Player otherPlayer = null;
+        if (collision.gameObject.tag == "Player")
+        {
+            otherPlayer = collision.gameObject.GetComponent<Player>();
+        }
+        PlayerData otherPlayerData = null;
+        PlayerData playerData = null;
+        foreach (PlayerData p in dataRepo.Players)
+        {
+            if (p.Player == otherPlayer)
+            {
+                otherPlayerData = p;
+            }
+            if (p.Player == player)
+            {
+                playerData = p;
+            }
+        }
+        if (otherPlayer != null)
+        {
+            Vector3 pushDirection = (otherPlayer.transform.position - player.transform.position).normalized;
+            float strengthDifference = playerData.Strength - otherPlayerData.Strength;
+
+            if (strengthDifference > 0) // This character is stronger
+            {
+                ApplyPush(pushDirection, strengthDifference, otherPlayerData);
+            }
+            else if (strengthDifference < 0) // The other character is stronger
+            {
+                ApplyPush(-pushDirection, Mathf.Abs(strengthDifference), playerData);
+            }
+        }
+    }
+    public static void OnPlayerCollisionExit(Player player, Collision collision, DataRepo dataRepo)
+    {
+
+        if (collision.gameObject.tag == "Ground")
+        {
+            foreach (PlayerData p in dataRepo.Players)
+            {
+                if (p.Player == player)
+                {
+                    p.IsGrounded = false;
+                }
+            }
+        }
+    }
     public static void OnPlayerTriggerEnter(MonoBehaviour mono,Player player,DataRepo dataRepo, Collider other)
     {
         PlayerData playerData = null;
@@ -132,34 +177,7 @@ public class SystemFunction
         }
 
     }
-    public static void OnPlayerCollisionStay(Player player, Collision collision, DataRepo dataRepo)
-    {
-        if (collision.gameObject.tag == "Ground")
-        {
-            foreach (PlayerData p in dataRepo.Players)
-            {
-                if (p.Player == player)
-                {
-                    p.IsGrounded = true;
-                }
-            }
-        }
-    }
 
-    public static void OnPlayerCollisionExit(Player player, Collision collision, DataRepo dataRepo)
-    {
-
-        if (collision.gameObject.tag == "Ground")
-        {
-            foreach (PlayerData p in dataRepo.Players)
-            {
-                if (p.Player == player)
-                {
-                    p.IsGrounded = false;
-                }
-            }
-        }
-    }
     public static void Move(DataRepo dataRepo, PlayerData playerData, Vector3 direction)
     {
         if (playerData.Player.IsMainPlayer)
@@ -167,34 +185,27 @@ public class SystemFunction
             Debug.Log($"IsMove:{playerData.IsFrozen}");
         }
         if (playerData.IsFrozen) return;
-        // Move the player
-        playerData.Player.transform.Translate(direction * dataRepo.ConfigData.SpeedOfCharacterMovement * Time.deltaTime, Space.World);
-
-        // Get the player's position on the XZ plane
-        Vector3 playerPosition = playerData.Player.transform.position;
-        Vector2 playerXZ = new Vector2(playerPosition.x, playerPosition.z);
-
-        // Get the cylinder center on the XZ plane
-        Vector2 cylinderCenterXZ = new Vector2(dataRepo.GroundCenter.x, dataRepo.GroundCenter.z);
-
-        // Calculate distance from the center of the cylinder
-        float distanceFromCenter = Vector2.Distance(playerXZ, cylinderCenterXZ);
-
-        // If the player is outside the cylinder radius, move them back to the boundary
-        if (distanceFromCenter > dataRepo.GroundRadius)
-        {
-            Vector2 directionBackToCenter = (playerXZ - cylinderCenterXZ).normalized * dataRepo.GroundRadius;
-            playerData.Player.transform.position = new Vector3(cylinderCenterXZ.x + directionBackToCenter.x, playerPosition.y, cylinderCenterXZ.y + directionBackToCenter.y);
-        }
-
-        // Handle rotation if there's movement
         if (direction != Vector3.zero)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-            playerData.Player.transform.rotation = Quaternion.Slerp(playerData.PlayerRigidbody.transform.rotation, targetRotation, Time.deltaTime * 100);
+            playerData.PlayerRigidbody.AddForce
+                                (direction * 40, ForceMode.Force);
+            if (playerData.PlayerRigidbody.linearVelocity.magnitude > 100)
+            {
+                playerData.PlayerRigidbody.linearVelocity =
+                    playerData.PlayerRigidbody.linearVelocity.normalized * 100;
+            }
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            playerData.Player.transform.rotation = Quaternion.Slerp(
+                playerData.Player.transform.rotation,
+                targetRotation,
+                Time.deltaTime * 10
+            );
         }
-
-        // Set animator parameters
+        else
+        {
+            playerData.PlayerRigidbody.AddForce
+                (playerData.PlayerRigidbody.linearVelocity * -40, ForceMode.Force);
+        }
         if (direction.magnitude < 0.1f)
         {
             playerData.PlayerAnimator.SetFloat("MoveSpeed", 0);
@@ -204,7 +215,10 @@ public class SystemFunction
             playerData.PlayerAnimator.SetFloat("MoveSpeed", 1);
         }
     }
-
+    public static void ApplyPush(Vector3 pushDirection, float forceAmount, PlayerData playerData)
+    {
+        playerData.PushForce = pushDirection * forceAmount * 5;
+    }
     public static void FixedUpdate(DataRepo dataRepo)
     {
         float v = dataRepo.Joystick.Vertical;
@@ -213,19 +227,80 @@ public class SystemFunction
         Vector3 direction = new Vector3(h,0,v) * -1;
         foreach(PlayerData p in  dataRepo.Players)
         {
-            p.PlayerAnimator.SetBool("Grounded", p.IsGrounded);
             if (p.Player.IsMainPlayer)
             {
                 Move(dataRepo,p,direction);
 
+            }
+            else
+            {
+                if (p.TargetItem)
+                {
+                    Vector3 targetCoinPosOnGround =
+                        new Vector3(p.TargetItem.position.x, dataRepo.GroundCollider.transform.position.y, p.TargetItem.position.z);
+                    Move(dataRepo, p, (targetCoinPosOnGround - p.Player.transform.position).normalized);
+                   
+                }
+                if (p.TargetAvoid)
+                {
+                    Vector3 targetAvoidPosOnGround =
+                    new Vector3(p.TargetAvoid.position.x, dataRepo.GroundCollider.transform.position.y, p.TargetAvoid.position.z);
+                    Move(dataRepo, p, (p.Player.transform.position - targetAvoidPosOnGround).normalized);
+                }
+
+                if (!p.TargetAvoid && !p.TargetItem)
+                {
+                    Move(dataRepo, p, (p.TargetMovement - p.Player.transform.position).normalized);
+                }
+            }
+            if (p.ShouldJump)
+            {
+                Jump(p);
+            }
+            // Faster falling when in air
+            if (!p.IsGrounded && p.PlayerRigidbody.linearVelocity.y < 0)
+            {
+                p.PlayerRigidbody.mass = 15;
+            }
+            else
+            {
+                p.PlayerRigidbody.mass = 1;
+            }
+            p.PlayerAnimator.SetBool("Grounded", p.IsGrounded);
+        }
+        foreach (PlayerData p in dataRepo.Players)
+        {
+            if (p.PushForce.magnitude > 0.01f) // Apply force smoothly
+            {
+                p.PlayerRigidbody.AddForce(p.PushForce, ForceMode.Acceleration);
+                p.PushForce *= 0.9f; // Gradually reduce the push force to prevent infinite sliding
+            }
+
+            else
+            {
+                p.PushForce = Vector3.zero;
+            }
+        }
+        if (dataRepo.ShouldStopGame)
+        {
+            foreach (PlayerData p in dataRepo.Players)
+            {
+                Move(dataRepo, p, Vector3.zero);
             }
         }
     }
 
     public static void OnJumpClicked(DataRepo dataRepo,PlayerData playerData)
     {
-        if (!playerData.IsGrounded) return;
-        playerData.OnJumpClicked = true;
+        playerData.ShouldJump = true;
+    }
+    public static void Jump(PlayerData playerData)
+    {
+        if (playerData.IsGrounded)
+        {
+            playerData.PlayerRigidbody.AddForce(Vector3.up * 30, ForceMode.Impulse);
+            playerData.ShouldJump = false;
+        }
     }
 
     public static void Update(DataRepo dataRepo)
@@ -261,22 +336,6 @@ public class SystemFunction
 
         }
 
-
-        foreach(PlayerData p in dataRepo.Players)
-        {
-            if (p.OnJumpClicked)
-            {
-                p.OnJumpClicked = false;
-                p.PlayerRigidbody.linearVelocity = Vector3.up * dataRepo.ConfigData.JumpVelocity;
-            }
-
-
-            if (p.PlayerRigidbody.linearVelocity.y < 0)
-            {
-                p.PlayerRigidbody.linearVelocity += Vector3.up * Physics.gravity.y * (dataRepo.ConfigData.FallMultiplier - 1) * Time.deltaTime;
-
-            }
-        }
     }
     public static IEnumerator ChangeBotLevel(DataRepo dataRepo)
     {
@@ -744,7 +803,7 @@ public class SystemFunction
                 Vector3 targetCoinPosOnGround =
                     new Vector3(playerData.TargetItem.position.x, dataRepo.GroundCollider.transform.position.y, playerData.TargetItem.position.z);
                 Debug.DrawLine(playerData.TargetItem.position, playerData.Player.transform.position, Color.red);
-                Move(dataRepo, playerData, (targetCoinPosOnGround - playerData.Player.transform.position).normalized);
+               
                 if (playerData.IsGrounded
                     && 0.2f + playerData.LastJump < Time.time
                     && Vector3.Distance(targetCoinPosOnGround, playerData.Player.transform.position) < 1.3f)
@@ -755,10 +814,7 @@ public class SystemFunction
             }
             if (playerData.TargetAvoid)
             {
-                Vector3 targetAvoidPosOnGround =
-                new Vector3(playerData.TargetAvoid.position.x, dataRepo.GroundCollider.transform.position.y, playerData.TargetAvoid.position.z);
                 Debug.DrawLine(playerData.TargetMovement, playerData.Player.transform.position, Color.yellow);
-                Move(dataRepo, playerData, (playerData.Player.transform.position - targetAvoidPosOnGround).normalized);
                 if (Vector3.Distance(playerData.TargetAvoid.position, playerData.Player.transform.position) > 1.5f)
                 {
                     playerData.TargetAvoid = null;
@@ -774,7 +830,6 @@ public class SystemFunction
 
                 }
                 Debug.DrawLine(playerData.TargetMovement, playerData.Player.transform.position, Color.green);
-                Move(dataRepo, playerData, (playerData.TargetMovement - playerData.Player.transform.position).normalized);
                 Debug.Log($"TargetMovement of player {playerData.Player}:{playerData.TargetMovement}");
                 if (Vector3.Distance(playerData.TargetMovement, playerData.Player.transform.position) < 0.1f)
                 {

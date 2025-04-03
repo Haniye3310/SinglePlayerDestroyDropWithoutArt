@@ -56,20 +56,16 @@ public class PlayerData
     public BotLevel BotLevel;
     public Animator PlayerAnimator;
     public Rigidbody PlayerRigidbody;
+    public float Strength;
     [NonSerialized]public float LastJump;
 
     
     [NonSerialized] public int NumberOfCoin;
     public TextMeshProUGUI NumberOfCoinText;
     [NonSerialized]public bool IsFrozen = false; // To track if the player is frozen
-    [NonSerialized] public Vector3 CurrentDirectionOfPlayer = Vector3.zero;
-    [NonSerialized] public float CurrentVerticalOfPlayer = 0;
-    [NonSerialized] public float CurrentHorizontalOfPlayer = 0;
     [NonSerialized] public bool IsGrounded =true;
-    [NonSerialized] public bool OnJumpClicked;
-    [NonSerialized] public Vector3 JumpVelocity;
-    [NonSerialized]public float GroundLevel = 1f; // Y position of the ground level
-    [NonSerialized]public float Gravity = 9.81f; // Acceleration due to gravity
+    [NonSerialized] public bool ShouldJump;
+    [NonSerialized] public Vector3 PushForce;
     [NonSerialized] public Transform TargetAvoid;
     [NonSerialized] public Transform TargetItem;
     [NonSerialized] public Vector3 TargetMovement;
