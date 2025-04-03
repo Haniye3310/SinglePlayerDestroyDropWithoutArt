@@ -1132,7 +1132,7 @@ MonoBehaviour:
     BotLevel: 3
     PlayerAnimator: {fileID: 4535607193373463874}
     PlayerRigidbody: {fileID: 7498944603278970683}
-    Strength: 40
+    Strength: 20
     NumberOfCoinText: {fileID: 2093073453}
     SecondToMakeDecision: 0
     ChanceOfAvoidance: 0
@@ -1141,7 +1141,7 @@ MonoBehaviour:
     BotLevel: 0
     PlayerAnimator: {fileID: 730203189681567291}
     PlayerRigidbody: {fileID: 6683939131538435140}
-    Strength: 30
+    Strength: 10
     NumberOfCoinText: {fileID: 753928565}
     SecondToMakeDecision: 0.1
     ChanceOfAvoidance: 20
@@ -1150,7 +1150,7 @@ MonoBehaviour:
     BotLevel: 2
     PlayerAnimator: {fileID: 7695261887150504375}
     PlayerRigidbody: {fileID: 1078906115}
-    Strength: 20
+    Strength: 0
     NumberOfCoinText: {fileID: 1589435624}
     SecondToMakeDecision: 0.3
     ChanceOfAvoidance: 40
@@ -1159,7 +1159,7 @@ MonoBehaviour:
     BotLevel: 1
     PlayerAnimator: {fileID: 4012830677016055699}
     PlayerRigidbody: {fileID: 7645859022395445078}
-    Strength: 10
+    Strength: 0
     NumberOfCoinText: {fileID: 173885121}
     SecondToMakeDecision: 0.5
     ChanceOfAvoidance: 60
@@ -12330,7 +12330,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 5ddbb7a00dfb8fc4983ba0815c78a940, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -31403,7 +31403,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 5ddbb7a00dfb8fc4983ba0815c78a940, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -34194,7 +34194,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 5ddbb7a00dfb8fc4983ba0815c78a940, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -51798,7 +51798,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 5ddbb7a00dfb8fc4983ba0815c78a940, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0

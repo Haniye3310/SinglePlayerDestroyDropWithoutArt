@@ -188,23 +188,25 @@ public class SystemFunction
         if (direction != Vector3.zero)
         {
             playerData.PlayerRigidbody.AddForce
-                                (direction * 40, ForceMode.Force);
-            if (playerData.PlayerRigidbody.linearVelocity.magnitude > 100)
+                                (direction * 60, ForceMode.Force);
+            if (playerData.PlayerRigidbody.linearVelocity.magnitude > 150)
             {
                 playerData.PlayerRigidbody.linearVelocity =
-                    playerData.PlayerRigidbody.linearVelocity.normalized * 100;
+                    playerData.PlayerRigidbody.linearVelocity.normalized * 150;
             }
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            playerData.Player.transform.rotation = Quaternion.Slerp(
-                playerData.Player.transform.rotation,
-                targetRotation,
-                Time.deltaTime * 10
-            );
+            // Prevent rotation from bending forward when jumping
+            Vector3 flatDirection = new Vector3(direction.x, 0, direction.z); // Ignore Y-axis
+            if (flatDirection != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(flatDirection);
+                playerData.PlayerRigidbody.
+                    MoveRotation(Quaternion.Slerp(playerData.PlayerRigidbody.rotation, targetRotation, Time.fixedDeltaTime * 10f));
+            }
         }
         else
         {
             playerData.PlayerRigidbody.AddForce
-                (playerData.PlayerRigidbody.linearVelocity * -40, ForceMode.Force);
+                (playerData.PlayerRigidbody.linearVelocity * -60, ForceMode.Force);
         }
         if (direction.magnitude < 0.1f)
         {
@@ -237,20 +239,20 @@ public class SystemFunction
                 if (p.TargetItem)
                 {
                     Vector3 targetCoinPosOnGround =
-                        new Vector3(p.TargetItem.position.x, dataRepo.GroundCollider.transform.position.y, p.TargetItem.position.z);
-                    Move(dataRepo, p, (targetCoinPosOnGround - p.Player.transform.position).normalized);
+                        new Vector3(p.TargetItem.position.x, dataRepo.GroundCollider.position.y + (dataRepo.GroundCollider.localScale.y), p.TargetItem.position.z);
+                    Move(dataRepo, p, (targetCoinPosOnGround - p.Player.transform.position));
                    
                 }
                 if (p.TargetAvoid)
                 {
                     Vector3 targetAvoidPosOnGround =
-                    new Vector3(p.TargetAvoid.position.x, dataRepo.GroundCollider.transform.position.y, p.TargetAvoid.position.z);
-                    Move(dataRepo, p, (p.Player.transform.position - targetAvoidPosOnGround).normalized);
+                    new Vector3(p.TargetAvoid.position.x, dataRepo.GroundCollider.position.y + (dataRepo.GroundCollider.localScale.y), p.TargetAvoid.position.z);
+                    Move(dataRepo, p, (p.Player.transform.position - targetAvoidPosOnGround));
                 }
 
                 if (!p.TargetAvoid && !p.TargetItem)
                 {
-                    Move(dataRepo, p, (p.TargetMovement - p.Player.transform.position).normalized);
+                    Move(dataRepo, p, (p.TargetMovement - p.Player.transform.position));
                 }
             }
             if (p.ShouldJump)
@@ -260,11 +262,11 @@ public class SystemFunction
             // Faster falling when in air
             if (!p.IsGrounded && p.PlayerRigidbody.linearVelocity.y < 0)
             {
-                p.PlayerRigidbody.mass = 15;
+                p.PlayerRigidbody.mass = 10;
             }
             else
             {
-                p.PlayerRigidbody.mass = 1;
+                p.PlayerRigidbody.mass = 2;
             }
             p.PlayerAnimator.SetBool("Grounded", p.IsGrounded);
         }
@@ -290,7 +292,7 @@ public class SystemFunction
         }
     }
 
-    public static void OnJumpClicked(DataRepo dataRepo,PlayerData playerData)
+    public static void OnJumpClicked(DataRepo dataRepo, PlayerData playerData)
     {
         playerData.ShouldJump = true;
     }
@@ -298,7 +300,7 @@ public class SystemFunction
     {
         if (playerData.IsGrounded)
         {
-            playerData.PlayerRigidbody.AddForce(Vector3.up * 30, ForceMode.Impulse);
+            playerData.PlayerRigidbody.AddForce(Vector3.up * 10, ForceMode.Impulse);
             playerData.ShouldJump = false;
         }
     }
