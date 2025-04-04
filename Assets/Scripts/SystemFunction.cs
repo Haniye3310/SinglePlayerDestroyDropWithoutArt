@@ -180,33 +180,16 @@ public class SystemFunction
 
     public static void Move(DataRepo dataRepo, PlayerData playerData, Vector3 direction)
     {
-        if (playerData.Player.IsMainPlayer)
-        {
-            Debug.Log($"IsMove:{playerData.IsFrozen}");
-        }
+
         if (playerData.IsFrozen) return;
+        direction.y = 0;
         if (direction != Vector3.zero)
         {
             playerData.PlayerRigidbody.AddForce
-                                (direction * 60, ForceMode.Force);
-            if (playerData.PlayerRigidbody.linearVelocity.magnitude > 150)
-            {
-                playerData.PlayerRigidbody.linearVelocity =
-                    playerData.PlayerRigidbody.linearVelocity.normalized * 150;
-            }
-            // Prevent rotation from bending forward when jumping
-            Vector3 flatDirection = new Vector3(direction.x, 0, direction.z); // Ignore Y-axis
-            if (flatDirection != Vector3.zero)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(flatDirection);
-                playerData.PlayerRigidbody.
-                    MoveRotation(Quaternion.Slerp(playerData.PlayerRigidbody.rotation, targetRotation, Time.fixedDeltaTime * 10f));
-            }
-        }
-        else
-        {
-            playerData.PlayerRigidbody.AddForce
-                (playerData.PlayerRigidbody.linearVelocity * -60, ForceMode.Force);
+                                (direction * 40, ForceMode.Force);
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            playerData.PlayerRigidbody.
+                MoveRotation(Quaternion.Slerp(playerData.PlayerRigidbody.rotation, targetRotation, Time.fixedDeltaTime * 10f));
         }
         if (direction.magnitude < 0.1f)
         {
@@ -257,16 +240,16 @@ public class SystemFunction
             }
             if (p.ShouldJump)
             {
-                Jump(p);
+                Jump(dataRepo,p);
             }
             // Faster falling when in air
             if (!p.IsGrounded && p.PlayerRigidbody.linearVelocity.y < 0)
             {
-                p.PlayerRigidbody.mass = 10;
+                p.PlayerRigidbody.mass = 15;
             }
             else
             {
-                p.PlayerRigidbody.mass = 2;
+                p.PlayerRigidbody.mass = 1;
             }
             p.PlayerAnimator.SetBool("Grounded", p.IsGrounded);
         }
@@ -295,13 +278,29 @@ public class SystemFunction
     public static void OnJumpClicked(DataRepo dataRepo, PlayerData playerData)
     {
         playerData.ShouldJump = true;
+
+        if (playerData == dataRepo.Players[1])
+        {
+            Debug.Log("OnJumpClicked");
+        }
+
     }
-    public static void Jump(PlayerData playerData)
+    public static void Jump(DataRepo dataRepo,PlayerData playerData)
     {
+        if (playerData == dataRepo.Players[1])
+        {
+            Debug.Log("Jump");
+        }
         if (playerData.IsGrounded)
         {
-            playerData.PlayerRigidbody.AddForce(Vector3.up * 10, ForceMode.Impulse);
+            if (playerData == dataRepo.Players[1])
+            {
+                Debug.Log("IsGrounded Force");
+            }
+
+            playerData.PlayerRigidbody.AddForce(Vector3.up * 5, ForceMode.Impulse);
             playerData.ShouldJump = false;
+
         }
     }
 
@@ -498,7 +497,6 @@ public class SystemFunction
     }
     public static void InstantiateItemAndAddThemToLists(DataRepo dataRepo,ItemType itemType)
     {
-        Debug.Log($"TypeBug:{itemType}");
         Gift go;
         if(itemType== ItemType.Coin)
         {
@@ -799,7 +797,6 @@ public class SystemFunction
                     }
                 }
             }
-            Debug.Log($"BBug: TargetItem:{playerData.TargetItem}");
             if (playerData.TargetItem)
             {
                 Vector3 targetCoinPosOnGround =
@@ -807,7 +804,7 @@ public class SystemFunction
                 Debug.DrawLine(playerData.TargetItem.position, playerData.Player.transform.position, Color.red);
                
                 if (playerData.IsGrounded
-                    && 0.2f + playerData.LastJump < Time.time
+                    && 0.4f + playerData.LastJump < Time.time
                     && Vector3.Distance(targetCoinPosOnGround, playerData.Player.transform.position) < 1.3f)
                 {
                     playerData.LastJump = Time.time;
@@ -828,11 +825,9 @@ public class SystemFunction
                 if (playerData.TargetMovement == Vector3.zero)
                 {
                     playerData.TargetMovement = GetRandomPositionOnGround(dataRepo,playerData);
-                    Debug.Log($"TargetMovement of player {playerData.Player}is initialized");
 
                 }
                 Debug.DrawLine(playerData.TargetMovement, playerData.Player.transform.position, Color.green);
-                Debug.Log($"TargetMovement of player {playerData.Player}:{playerData.TargetMovement}");
                 if (Vector3.Distance(playerData.TargetMovement, playerData.Player.transform.position) < 0.1f)
                 {
                     playerData.TargetMovement = Vector3.zero;
@@ -852,7 +847,18 @@ public class SystemFunction
 
     public static void RemoveGiftFromLists(DataRepo dataRepo, Gift giftShouldBeRemoved) 
     {
-        for(int i = 0; i < dataRepo.HammerList.Count;i++)
+        foreach (PlayerData p in dataRepo.Players)
+        {
+            if (p.TargetItem == giftShouldBeRemoved.transform)
+            {
+                p.TargetItem = null;
+            }
+            if (p.TargetAvoid == giftShouldBeRemoved.transform)
+            {
+                p.TargetAvoid = null;
+            }
+        }
+        for (int i = 0; i < dataRepo.HammerList.Count;i++)
         {
             if (dataRepo.HammerList[i] == giftShouldBeRemoved)
             {

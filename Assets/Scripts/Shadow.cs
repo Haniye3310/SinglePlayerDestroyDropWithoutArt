@@ -14,7 +14,6 @@ public class Shadow : MonoBehaviour
         shadow.transform.localScale = ScaleOfShadow;
         if (shadow.TryGetComponent<Collider>(out Collider col))
         {
-            Debug.Log("DestroyBug");
             Destroy(col); // Remove any collider on the shadow prefab
         }
     }
