@@ -124,7 +124,7 @@ public class SystemFunction
                 playerData = p;
             }
         }
-        if (otherPlayer != null)
+        if (otherPlayer != null && playerData.IsGrounded && otherPlayerData.IsGrounded)
         {
             Vector3 pushDirection = (otherPlayer.transform.position - player.transform.position).normalized;
             float strengthDifference = playerData.Strength - otherPlayerData.Strength;
@@ -186,7 +186,7 @@ public class SystemFunction
         if (direction != Vector3.zero)
         {
             playerData.PlayerRigidbody.AddForce
-                                (direction * 40, ForceMode.Force);
+                                (direction * 60, ForceMode.Force);
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             playerData.PlayerRigidbody.
                 MoveRotation(Quaternion.Slerp(playerData.PlayerRigidbody.rotation, targetRotation, Time.fixedDeltaTime * 10f));
@@ -219,22 +219,36 @@ public class SystemFunction
             }
             else
             {
+                if (p.Player == dataRepo.Players[1].Player)
+                {
+                    Debug.Log($"P1 TargetItem:{p.TargetItem}");
+                    Debug.Log($"P1 TargetAvoid:{p.TargetAvoid}");
+                    Debug.Log($"P1 TargetMovement:{p.TargetMovement}");
+                }
                 if (p.TargetItem)
                 {
                     Vector3 targetCoinPosOnGround =
-                        new Vector3(p.TargetItem.position.x, dataRepo.GroundCollider.position.y + (dataRepo.GroundCollider.localScale.y), p.TargetItem.position.z);
+                        new Vector3
+                        (p.TargetItem.position.x,
+                        dataRepo.GroundCollider.position.y + (dataRepo.GroundCollider.localScale.y),
+                        p.TargetItem.position.z);
+                    Debug.DrawLine(p.TargetItem.position, p.Player.transform.position, Color.red);
                     Move(dataRepo, p, (targetCoinPosOnGround - p.Player.transform.position));
-                   
                 }
                 if (p.TargetAvoid)
                 {
                     Vector3 targetAvoidPosOnGround =
-                    new Vector3(p.TargetAvoid.position.x, dataRepo.GroundCollider.position.y + (dataRepo.GroundCollider.localScale.y), p.TargetAvoid.position.z);
+                    new Vector3
+                    (p.TargetAvoid.position.x,
+                    dataRepo.GroundCollider.position.y + (dataRepo.GroundCollider.localScale.y),
+                    p.TargetAvoid.position.z);
+                    Debug.DrawLine(p.TargetMovement, p.Player.transform.position, Color.yellow);
                     Move(dataRepo, p, (p.Player.transform.position - targetAvoidPosOnGround));
                 }
 
                 if (!p.TargetAvoid && !p.TargetItem)
                 {
+                    Debug.DrawLine(p.TargetMovement, p.Player.transform.position, Color.green);
                     Move(dataRepo, p, (p.TargetMovement - p.Player.transform.position));
                 }
             }
@@ -699,7 +713,7 @@ public class SystemFunction
                         // Calculate distance from the center of the cylinder
                         float distanceFromCenter = Vector2.Distance(new Vector2( g.Gift.transform.position.x,g.Gift.transform.position.z), cylinderCenterXZ);
 
-                        if (distanceFromCenter < dataRepo.GroundRadius)
+                        if (distanceFromCenter < dataRepo.GroundRadius+0.1)
                         {
                             coinDistances.Add(g.Gift, Vector3.Distance(playerData.Player.transform.position, g.Gift.transform.position));
                         }
@@ -714,7 +728,7 @@ public class SystemFunction
                         // Calculate distance from the center of the cylinder
                         float distanceFromCenter = Vector2.Distance(new Vector2(g.Gift.transform.position.x, g.Gift.transform.position.z), cylinderCenterXZ);
 
-                        if (distanceFromCenter < dataRepo.GroundRadius)
+                        if (distanceFromCenter < dataRepo.GroundRadius+0.1f)
                         {
                             bagDistances.Add(g.Gift, Vector3.Distance(playerData.Player.transform.position, g.Gift.transform.position));
                         }
@@ -755,6 +769,10 @@ public class SystemFunction
                         Gift g = giftPriorityList[i];
                         List<Gift> allItemsRightNow = new List<Gift>();
                         allItemsRightNow.AddRange(dataRepo.HammerList);
+                        if (playerData.Player == dataRepo.Players[1].Player)
+                        {
+                            Debug.Log($"P1 GiftPriorityLoop");
+                        }
                         foreach (GiftTime giftTime in dataRepo.CoinList)
                         {
                             allItemsRightNow.Add(giftTime.Gift);
@@ -768,6 +786,10 @@ public class SystemFunction
                         if (allItemsRightNow.Contains(g))
                         {
                             playerData.TargetItem = g.transform;
+                            if (playerData.Player == dataRepo.Players[1].Player)
+                            {
+                                Debug.Log($"P1 TargetItem in StarRo:{playerData.TargetItem}");
+                            }
                             break;
                         }
                     }
@@ -801,7 +823,6 @@ public class SystemFunction
             {
                 Vector3 targetCoinPosOnGround =
                     new Vector3(playerData.TargetItem.position.x, dataRepo.GroundCollider.transform.position.y, playerData.TargetItem.position.z);
-                Debug.DrawLine(playerData.TargetItem.position, playerData.Player.transform.position, Color.red);
                
                 if (playerData.IsGrounded
                     && 0.4f + playerData.LastJump < Time.time
@@ -813,7 +834,6 @@ public class SystemFunction
             }
             if (playerData.TargetAvoid)
             {
-                Debug.DrawLine(playerData.TargetMovement, playerData.Player.transform.position, Color.yellow);
                 if (Vector3.Distance(playerData.TargetAvoid.position, playerData.Player.transform.position) > 1.5f)
                 {
                     playerData.TargetAvoid = null;
@@ -827,7 +847,6 @@ public class SystemFunction
                     playerData.TargetMovement = GetRandomPositionOnGround(dataRepo,playerData);
 
                 }
-                Debug.DrawLine(playerData.TargetMovement, playerData.Player.transform.position, Color.green);
                 if (Vector3.Distance(playerData.TargetMovement, playerData.Player.transform.position) < 0.1f)
                 {
                     playerData.TargetMovement = Vector3.zero;
@@ -849,9 +868,14 @@ public class SystemFunction
     {
         foreach (PlayerData p in dataRepo.Players)
         {
+
             if (p.TargetItem == giftShouldBeRemoved.transform)
             {
                 p.TargetItem = null;
+                if (p.Player == dataRepo.Players[1].Player)
+                {
+                    Debug.Log($"P1 TargetItem in RemoveFro:{p.TargetItem}");
+                }
             }
             if (p.TargetAvoid == giftShouldBeRemoved.transform)
             {

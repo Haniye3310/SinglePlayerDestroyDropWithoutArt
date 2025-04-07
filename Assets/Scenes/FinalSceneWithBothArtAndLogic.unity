@@ -1163,7 +1163,7 @@ MonoBehaviour:
     NumberOfCoinText: {fileID: 173885121}
     SecondToMakeDecision: 0.5
     ChanceOfAvoidance: 60
-    GiftPriority: 0
+    GiftPriority: 3
   CoinPrefab: {fileID: 8991445257287299716, guid: 16ff7fa54ed89544f97f9ee8556b6205,
     type: 3}
   BagOfCoinPrefab: {fileID: 2623319686943116866, guid: b98e8d6b81bbe8b4594904993a85eb7f,
