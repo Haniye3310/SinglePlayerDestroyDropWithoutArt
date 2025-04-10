@@ -20,7 +20,11 @@ public class DataRepo : MonoBehaviour
     [NonSerialized] public bool ShouldStopGame = false;
 
     public TextMeshProUGUI RemainingTimeText;
-    public TextMeshProUGUI StartCountDownTimer;
+    public Image StartCountDownTimer;
+    public Image GoImage;
+    public Sprite NumberThreeSprite;
+    public Sprite NumberTwoSprite;
+    public Sprite NumberOneSprite;
     public GameObject UIPanel;
     public Image TimerImage;
     public Sprite TimerRedBG;

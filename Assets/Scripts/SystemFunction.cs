@@ -182,11 +182,12 @@ public class SystemFunction
     {
 
         if (playerData.IsFrozen) return;
+        direction = direction.normalized;
         direction.y = 0;
         if (direction != Vector3.zero)
         {
             playerData.PlayerRigidbody.AddForce
-                                (direction * 60, ForceMode.Force);
+                                (direction * 75, ForceMode.Force);
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             playerData.PlayerRigidbody.
                 MoveRotation(Quaternion.Slerp(playerData.PlayerRigidbody.rotation, targetRotation, Time.fixedDeltaTime * 10f));
@@ -219,12 +220,6 @@ public class SystemFunction
             }
             else
             {
-                if (p.Player == dataRepo.Players[1].Player)
-                {
-                    Debug.Log($"P1 TargetItem:{p.TargetItem}");
-                    Debug.Log($"P1 TargetAvoid:{p.TargetAvoid}");
-                    Debug.Log($"P1 TargetMovement:{p.TargetMovement}");
-                }
                 if (p.TargetItem)
                 {
                     Vector3 targetCoinPosOnGround =

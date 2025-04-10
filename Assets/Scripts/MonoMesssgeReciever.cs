@@ -20,14 +20,30 @@ public class MonoMesssgeReciever : MonoBehaviour
         }
 
         DataRepo.StartCountDownTimer.gameObject.SetActive(true);
-        float remaingStartTime = 3;
+        float remaingStartTime = 4;
         while (remaingStartTime > 0)
         {
             remaingStartTime -= Time.deltaTime;
-            DataRepo.StartCountDownTimer.text = ((int)remaingStartTime +1).ToString();
+            if (((int)remaingStartTime + 1) == 4)
+            {
+                DataRepo.StartCountDownTimer.sprite = DataRepo.NumberThreeSprite;
+            }
+            if (((int)remaingStartTime + 1) == 3)
+            {
+                DataRepo.StartCountDownTimer.sprite = DataRepo.NumberTwoSprite;
+            }
+            if (((int)remaingStartTime + 1) == 2)
+            {
+                DataRepo.StartCountDownTimer.sprite = DataRepo.NumberOneSprite;
+            }
+            if (((int)remaingStartTime + 1) == 1)
+            {
+                DataRepo.StartCountDownTimer.gameObject.SetActive(false);
+                DataRepo.GoImage.gameObject.SetActive(true);
+            }
             yield return null;
         }
-        DataRepo.StartCountDownTimer.gameObject.SetActive(false);
+        DataRepo.GoImage.gameObject.SetActive(false);
         DataRepo.UIPanel.gameObject.SetActive(true);
         start = true;
         DataRepo.GroundCenter = DataRepo.GroundCollider.position;
