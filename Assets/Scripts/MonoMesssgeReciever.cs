@@ -84,6 +84,10 @@ public class MonoMesssgeReciever : MonoBehaviour
     {
         SceneManager.LoadScene("FinalSceneWithBothArtAndLogic");
     }
+    public void OnHomeClicked()
+    {
+        Application.OpenURL("https://tobi.gg");
+    }
     public void OnJumpClicked() 
     {
         foreach(PlayerData playerData in DataRepo.Players)

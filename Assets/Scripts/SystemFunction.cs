@@ -187,7 +187,7 @@ public class SystemFunction
         if (direction != Vector3.zero)
         {
             playerData.PlayerRigidbody.AddForce
-                                (direction * 75, ForceMode.Force);
+                                (direction * 85, ForceMode.Force);
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             playerData.PlayerRigidbody.
                 MoveRotation(Quaternion.Slerp(playerData.PlayerRigidbody.rotation, targetRotation, Time.fixedDeltaTime * 10f));
