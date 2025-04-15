@@ -251,15 +251,15 @@ public class SystemFunction
             {
                 Jump(dataRepo,p);
             }
-            // Faster falling when in air
-            if (!p.IsGrounded && p.PlayerRigidbody.linearVelocity.y < 0)
-            {
-                p.PlayerRigidbody.mass = 15;
-            }
-            else
-            {
-                p.PlayerRigidbody.mass = 1;
-            }
+            //// Faster falling when in air
+            //if (!p.IsGrounded && p.PlayerRigidbody.linearVelocity.y < 0)
+            //{
+            //    p.PlayerRigidbody.mass = 15;
+            //}
+            //else
+            //{
+            //    p.PlayerRigidbody.mass = 1;
+            //}
             p.PlayerAnimator.SetBool("Grounded", p.IsGrounded);
         }
         foreach (PlayerData p in dataRepo.Players)

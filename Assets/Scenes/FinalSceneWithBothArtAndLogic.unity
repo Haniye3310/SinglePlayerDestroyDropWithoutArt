@@ -53141,7 +53141,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 545879798477214485}
-  - component: {fileID: 8556492259143660664}
   - component: {fileID: 8556492259143660662}
   m_Layer: 6
   m_Name: Glove01
@@ -57611,27 +57610,6 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.00000011920929, y: -0.0049036145, z: 0.9376294}
     m_Extent: {x: 1.396819, y: 0.2723121, z: 0.25949734}
   m_DirtyAABB: 0
---- !u!65 &8556492259143660664
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7879526571086796819}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 2.7936437, y: 0.5446257, z: 0.51899624}
-  m_Center: {x: -0.000000114264154, y: -0.004904619, z: 0.9376292}
 --- !u!4 &8556515728651199263
 Transform:
   m_ObjectHideFlags: 0
