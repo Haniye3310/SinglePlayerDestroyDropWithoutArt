@@ -15,10 +15,10 @@ public class SystemFunction
         while (dataRepo.RemainingTimeInGame > 0)
         {
             dataRepo.RemainingTimeInGame -= Time.deltaTime;
-            if((int)dataRepo.RemainingTimeInGame < 5)
-            {
-                dataRepo.TimerImage.sprite = dataRepo.TimerRedBG;
-            }
+            //if((int)dataRepo.RemainingTimeInGame < 5)
+            //{
+            //    dataRepo.TimerImage.sprite = dataRepo.TimerRedBG;
+            //}
             dataRepo.RemainingTimeText.text = ((int)dataRepo.RemainingTimeInGame).ToString();
             yield return null;
         }

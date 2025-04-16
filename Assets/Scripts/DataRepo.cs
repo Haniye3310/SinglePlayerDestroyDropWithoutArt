@@ -27,7 +27,6 @@ public class DataRepo : MonoBehaviour
     public Sprite NumberOneSprite;
     public GameObject UIPanel;
     public Image TimerImage;
-    public Sprite TimerRedBG;
     public GameObject ResultPanel;
     public Sprite FirstSprite;
     public Sprite SecondSprite;
