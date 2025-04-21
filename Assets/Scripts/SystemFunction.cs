@@ -1,12 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using static Unity.Collections.Unicode;
-
+using DG.Tweening;
 public class SystemFunction
 {
     public static IEnumerator StartTimerOftheGame(DataRepo dataRepo)
@@ -543,6 +539,10 @@ public class SystemFunction
         playerData.Player.playerScoreText.text = $"+{numToAdd}";
 
         playerData.Player.playerScoreText.gameObject.SetActive(true);
+        playerData.Player.playerScoreText.transform.DOScale(5, 0.2f).OnComplete(() =>
+        {
+            playerData.Player.playerScoreText.transform.DOScale(1, 0.2f);
+        });
         yield return new WaitForSeconds(1);
         playerData.Player.playerScoreText.gameObject.SetActive(false);
         playerData.Player.starIconNearText.gameObject.SetActive(false);
