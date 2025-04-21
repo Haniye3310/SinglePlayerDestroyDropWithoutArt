@@ -10,7 +10,7 @@ public class DataRepo : MonoBehaviour
     public ConfigData ConfigData;
     public FixedJoystick Joystick;
     public List<PlayerData> Players;
-
+    public List<GameObject> BotsPrefabs;
     public Gift CoinPrefab;
     public Gift BagOfCoinPrefab;
     public Gift HammerPrefab;

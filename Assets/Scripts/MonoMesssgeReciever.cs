@@ -8,6 +8,49 @@ public class MonoMesssgeReciever : MonoBehaviour
     bool start;
     private IEnumerator Start()
     {
+        int r = Random.Range(0, 3);
+        if(r== 0)
+        {
+            DataRepo.Players[1].PlayerAnimator = DataRepo.BotsPrefabs[0].GetComponent<Animator>();
+            DataRepo.Players[1].PlayerRigidbody = DataRepo.BotsPrefabs[0].GetComponent<Rigidbody>();
+            DataRepo.Players[1].Player = DataRepo.BotsPrefabs[0].GetComponent<Player>();
+
+            DataRepo.Players[2].PlayerAnimator = DataRepo.BotsPrefabs[1].GetComponent<Animator>();
+            DataRepo.Players[2].PlayerRigidbody = DataRepo.BotsPrefabs[1].GetComponent<Rigidbody>();
+            DataRepo.Players[2].Player = DataRepo.BotsPrefabs[1].GetComponent<Player>();
+
+            DataRepo.Players[3].PlayerAnimator = DataRepo.BotsPrefabs[2].GetComponent<Animator>();
+            DataRepo.Players[3].PlayerRigidbody = DataRepo.BotsPrefabs[2].GetComponent<Rigidbody>();
+            DataRepo.Players[3].Player = DataRepo.BotsPrefabs[2].GetComponent<Player>();
+        }
+        if (r == 1) 
+        {
+            DataRepo.Players[1].PlayerAnimator = DataRepo.BotsPrefabs[1].GetComponent<Animator>();
+            DataRepo.Players[1].PlayerRigidbody = DataRepo.BotsPrefabs[1].GetComponent<Rigidbody>();
+            DataRepo.Players[1].Player = DataRepo.BotsPrefabs[1].GetComponent<Player>();
+
+            DataRepo.Players[2].PlayerAnimator = DataRepo.BotsPrefabs[0].GetComponent<Animator>();
+            DataRepo.Players[2].PlayerRigidbody = DataRepo.BotsPrefabs[0].GetComponent<Rigidbody>();
+            DataRepo.Players[2].Player = DataRepo.BotsPrefabs[0].GetComponent<Player>();
+
+            DataRepo.Players[3].PlayerAnimator = DataRepo.BotsPrefabs[2].GetComponent<Animator>();
+            DataRepo.Players[3].PlayerRigidbody = DataRepo.BotsPrefabs[2].GetComponent<Rigidbody>();
+            DataRepo.Players[3].Player = DataRepo.BotsPrefabs[2].GetComponent<Player>();
+        }
+        if (r == 2)
+        {
+            DataRepo.Players[1].PlayerAnimator = DataRepo.BotsPrefabs[2].GetComponent<Animator>();
+            DataRepo.Players[1].PlayerRigidbody = DataRepo.BotsPrefabs[2].GetComponent<Rigidbody>();
+            DataRepo.Players[1].Player = DataRepo.BotsPrefabs[2].GetComponent<Player>();
+
+            DataRepo.Players[2].PlayerAnimator = DataRepo.BotsPrefabs[1].GetComponent<Animator>();
+            DataRepo.Players[2].PlayerRigidbody = DataRepo.BotsPrefabs[1].GetComponent<Rigidbody>();
+            DataRepo.Players[2].Player = DataRepo.BotsPrefabs[1].GetComponent<Player>();
+
+            DataRepo.Players[3].PlayerAnimator = DataRepo.BotsPrefabs[0].GetComponent<Animator>();
+            DataRepo.Players[3].PlayerRigidbody = DataRepo.BotsPrefabs[0].GetComponent<Rigidbody>();
+            DataRepo.Players[3].Player = DataRepo.BotsPrefabs[0].GetComponent<Player>();
+        }
         foreach (PlayerData p in DataRepo.Players)
         {
             p.PlayerAnimator.SetBool("Grounded", p.IsGrounded);
