@@ -49,7 +49,7 @@ public class DataRepo : MonoBehaviour
     public Transform GroundCollider;
 
     public GeneratorData GeneratorData;
-
+    public GameObject CircleAroundMainCharacter;
 
 }
 [Serializable]

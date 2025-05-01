@@ -61,6 +61,11 @@ public class SystemFunction
         }
 
     }
+    public static IEnumerator DeleteCircleAroundMainChar(DataRepo dataRepo)
+    {
+        yield return new WaitForSeconds(2);
+        dataRepo.CircleAroundMainCharacter.gameObject.SetActive(false);
+    }
     public static void OnPlayerCollisionEnter(MonoBehaviour mono,Player player,Collision collision, DataRepo dataRepo)
     {
         PlayerData playerData = null;

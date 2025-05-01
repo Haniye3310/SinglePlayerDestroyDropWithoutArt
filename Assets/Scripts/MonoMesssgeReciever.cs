@@ -109,6 +109,7 @@ public class MonoMesssgeReciever : MonoBehaviour
                 StartCoroutine(SystemFunction.StartRobot(DataRepo.Players[i], DataRepo));
             }
         }
+        StartCoroutine(SystemFunction.DeleteCircleAroundMainChar(DataRepo));
         StartCoroutine(SystemFunction.ChangeBotLevel(DataRepo));
 
     }
