@@ -1430,6 +1430,7 @@ MonoBehaviour:
   GroundCollider: {fileID: 1058450481}
   GeneratorData:
     Generator: {fileID: 2090607334}
+  CircleAroundMainCharacter: {fileID: 790677700}
 --- !u!4 &374245343
 Transform:
   m_ObjectHideFlags: 0
@@ -7393,7 +7394,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.24125001, y: 0.18259376}
   m_AnchorMax: {x: 0.24125001, y: 0.18259376}
-  m_AnchoredPosition: {x: 1.0001068, y: 4.144989}
+  m_AnchoredPosition: {x: 1.0001221, y: 4.1450195}
   m_SizeDelta: {x: 149.59, y: 134.77}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1933561679

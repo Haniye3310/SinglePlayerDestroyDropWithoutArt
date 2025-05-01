@@ -183,6 +183,9 @@ public class SystemFunction
     {
 
         if (playerData.IsFrozen) return;
+        if (Vector2.Distance(new Vector2(dataRepo.GroundCenter.x, dataRepo.GroundCenter.z)
+    , new Vector2(playerData.Player.transform.position.x, playerData.Player.transform.position.z)) >= dataRepo.GroundRadius + 0.5f)
+            return;
         direction = direction.normalized;
         direction.y = 0;
         if (direction != Vector3.zero)
