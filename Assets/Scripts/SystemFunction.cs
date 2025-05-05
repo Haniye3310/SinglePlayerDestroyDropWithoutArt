@@ -250,6 +250,14 @@ public class SystemFunction
                     Debug.DrawLine(p.TargetMovement, p.Player.transform.position, Color.green);
                     Move(dataRepo, p, (p.TargetMovement - p.Player.transform.position));
                 }
+
+                // Clamp vertical velocity to prevent buildup
+                Vector3 vel = p.PlayerRigidbody.linearVelocity;
+                if (vel.y > 5f) // or whatever jump limit you want
+                {
+                    vel.y = 5f;
+                    p.PlayerRigidbody.linearVelocity = vel;
+                }
             }
             if (p.ShouldJump)
             {
