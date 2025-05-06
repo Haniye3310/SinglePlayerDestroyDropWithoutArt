@@ -251,17 +251,17 @@ public class SystemFunction
                     Move(dataRepo, p, (p.TargetMovement - p.Player.transform.position));
                 }
 
-                // Clamp vertical velocity to prevent buildup
-                Vector3 vel = p.PlayerRigidbody.linearVelocity;
-                if (vel.y > 5f) // or whatever jump limit you want
-                {
-                    vel.y = 5f;
-                    p.PlayerRigidbody.linearVelocity = vel;
-                }
             }
             if (p.ShouldJump)
             {
                 Jump(dataRepo,p);
+            }
+            // Clamp vertical velocity to prevent buildup
+            Vector3 vel = p.PlayerRigidbody.linearVelocity;
+            if (vel.y > 5f) // or whatever jump limit you want
+            {
+                vel.y = 5f;
+                p.PlayerRigidbody.linearVelocity = vel;
             }
             //// Faster falling when in air
             //if (!p.IsGrounded && p.PlayerRigidbody.linearVelocity.y < 0)
